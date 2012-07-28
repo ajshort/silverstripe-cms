@@ -116,12 +116,8 @@ class RootURLController extends Controller {
 			$this->response->redirect(Director::absoluteBaseURL() . 'dev/build?returnURL=' . (isset($_GET['url']) ? urlencode($_GET['url']) : null));
 			return $this->response;
 		}
-			
-		$request = new SS_HTTPRequest (
-			$request->httpMethod(), self::get_homepage_link() . '/', $request->getVars(), $request->postVars()
-		);
-		$request->match('$URLSegment//$Action', true);
-		
+
+		$request->pushParams(array('URLSegment' => self::get_homepage_link()));
 		$controller = new ModelAsController();
 		$result     = $controller->handleRequest($request, $model);
 		
