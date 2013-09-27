@@ -1521,8 +1521,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		// Need to mark pages depending to this one as broken
 		$dependentPages = $this->DependentPages();
 		if($dependentPages) foreach($dependentPages as $page) {
-			// $page->write() calls syncLinkTracking, which does all the hard work for us.
-			$page->write();
+			$page->syncLinkTracking();
 		}
 		
 		parent::onAfterDelete();
@@ -2267,7 +2266,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		DB::query("UPDATE \"SiteTree_Live\"
 			SET \"Sort\" = (SELECT \"SiteTree\".\"Sort\" FROM \"SiteTree\" WHERE \"SiteTree_Live\".\"ID\" = \"SiteTree\".\"ID\")
 			WHERE EXISTS (SELECT \"SiteTree\".\"Sort\" FROM \"SiteTree\" WHERE \"SiteTree_Live\".\"ID\" = \"SiteTree\".\"ID\") AND \"ParentID\" = " . sprintf('%d', $this->ParentID) );
-			
+
 		// Publish any virtual pages that might need publishing
 		$linkedPages = $this->VirtualPages();
 		if($linkedPages) foreach($linkedPages as $page) {
@@ -2280,8 +2279,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		$origMode = Versioned::get_reading_mode();
 		Versioned::reading_stage('Live');
 		foreach($this->DependentPages(false) as $page) {
-			// $page->write() calls syncLinkTracking, which does all the hard work for us.
-			$page->write();
+			$page->syncLinkTracking();
 		}
 		Versioned::set_reading_mode($origMode);
 		
